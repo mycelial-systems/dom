@@ -43,7 +43,7 @@
     "tap-spec": "^5.0.0",
     "tape-run": "^11.0.0",
     "typedoc": "^0.28.1",
-    "typescript": "^5.2.2",
+    "typescript": "^6.0.3",
     "xterm": "^5.3.0"
   },
   "author": "nichoth <nichoth@gmail.com> (https://nichoth.com)",

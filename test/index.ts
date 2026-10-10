@@ -66,6 +66,24 @@ test('call waitFor with a lambda only', async t => {
     t.ok(el, 'should find an element given a lambda function')
 })
 
+test('waitFor stops polling after it resolves', async t => {
+    let calls = 0
+    const p = document.createElement('p')
+    document.body.appendChild(p)
+
+    await dom.waitFor(null, { visible:false }, () => {
+        calls++
+        return p
+    })
+    const callsAtResolve = calls
+
+    await dom.sleep(200)
+    p.remove()
+
+    t.equal(calls, callsAtResolve,
+        'should not call the lambda again after resolving')
+})
+
 test("dom.waitFor when it doesn't find an element", async t => {
     t.plan(1)
 
@@ -78,6 +96,47 @@ test("dom.waitFor when it doesn't find an element", async t => {
             "should throw if it doesn't find an element"
         )
     }
+})
+
+test('waitFor stops polling after it times out', async t => {
+    let calls = 0
+
+    try {
+        await dom.waitFor(null, { timeout:200 }, () => {
+            calls++
+            return null
+        })
+        t.fail('should not resolve')
+    } catch (err) {
+        t.ok(err, 'should reject when the element is not found')
+    }
+    const callsAtReject = calls
+
+    await dom.sleep(200)
+
+    t.equal(calls, callsAtReject,
+        'should not call the lambda again after rejecting')
+})
+
+test('waitFor rejects if the lambda throws', async t => {
+    let calls = 0
+    const boom = new Error('boom')
+
+    try {
+        await dom.waitFor(null, { timeout:1000 }, () => {
+            calls++
+            throw boom
+        })
+        t.fail('should not resolve')
+    } catch (err) {
+        t.equal(err, boom, 'should reject with the error from the lambda')
+    }
+    const callsAtReject = calls
+
+    await dom.sleep(200)
+
+    t.equal(calls, callsAtReject,
+        'should not call the lambda again after rejecting')
 })
 
 test('dom.click', async t => {
@@ -109,6 +168,35 @@ test('dom.waitForText', async t => {
 
     const elAgain = await dom.waitForText('bar')
     t.ok(elAgain, 'should find an element given text only')
+})
+
+test('waitForText stops polling after it resolves', async t => {
+    const parent = document.createElement('div')
+    parent.innerHTML = '<span>polling target</span>'
+    document.body.appendChild(parent)
+
+    // count how many times the search reads the parent's children
+    let reads = 0
+    const childrenGetter = Object.getOwnPropertyDescriptor(
+        Element.prototype,
+        'children'
+    )!.get!
+    Object.defineProperty(parent, 'children', {
+        get () {
+            reads++
+            return childrenGetter.call(parent)
+        }
+    })
+
+    const el = await dom.waitForText('polling target', parent)
+    const readsAtResolve = reads
+
+    await dom.sleep(200)
+    parent.remove()
+
+    t.ok(el, 'should find the text')
+    t.equal(reads, readsAtResolve,
+        'should not search the DOM again after resolving')
 })
 
 test('multiple tags', async t => {

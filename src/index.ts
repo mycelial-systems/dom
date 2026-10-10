@@ -242,9 +242,18 @@ export function waitFor (selector?:string|null, args?:{
         }
 
         const interval = setInterval(() => {
-            const el = lambda!()
+            let el:Element|null
+            try {
+                el = lambda!()
+            } catch (err) {
+                clearInterval(interval)
+                clearTimeout(timer)
+                return reject(err)
+            }
+
             if (el) {
                 if (visible && !isElementVisible(el)) return
+                clearInterval(interval)
                 clearTimeout(timer)
                 return resolve(el as HTMLElement)
             }

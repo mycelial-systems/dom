@@ -54,7 +54,7 @@ test('dom.waitFor', async t => {
 })
 
 test('call waitFor with a string and options', async t => {
-    const el = dom.waitFor('p', { timeout: 1000, visible: false })
+    const el = dom.waitFor('p', { timeout:1000, visible:false })
     t.ok(el, 'should find an element given a some option args')
 })
 
@@ -70,7 +70,7 @@ test("dom.waitFor when it doesn't find an element", async t => {
     t.plan(1)
 
     try {
-        await dom.waitFor('.doesnt-exist', { timeout: 1000 })
+        await dom.waitFor('.doesnt-exist', { timeout:1000 })
     } catch (err) {
         t.equal(
             (err as Error).message,
@@ -102,7 +102,7 @@ test('dom.click', async t => {
 test('dom.waitForText', async t => {
     // use the element we created previously
     const el = await dom.waitForText({
-        regex: /bar/
+        regex:/bar/
     }, document.body)
 
     t.ok(el, 'should find by text content')
@@ -113,9 +113,9 @@ test('dom.waitForText', async t => {
 
 test('multiple tags', async t => {
     const terminal = new Terminal({
-        allowTransparency: true,
-        fontFamily: 'FiraMono',
-        fontSize: 14
+        allowTransparency:true,
+        fontFamily:'FiraMono',
+        fontSize:14
     })
     terminal.writeln('foo bar baz')
 
@@ -125,14 +125,14 @@ test('multiple tags', async t => {
     terminal.open(el)
 
     const found = await dom.waitForText({
-        multipleTags: true,
-        text: 'foo bar'
+        multipleTags:true,
+        text:'foo bar'
     }, el)
     t.ok(found, 'should find text split into multiple tags')
 
     const text = await dom.waitForText({
-        multipleTags: true,
-        text: 'baz'
+        multipleTags:true,
+        text:'baz'
     })
     t.ok(text, 'should find "baz" text')
 })
@@ -150,9 +150,9 @@ test('more multiple tags', async t => {
 
     try {
         const quux = await dom.waitForText({
-            text: 'quux',
-            multipleTags: true,
-            timeout: 1000
+            text:'quux',
+            multipleTags:true,
+            timeout:1000
         }, testEl)
 
         t.ok(quux, 'should find the test in separate tags')
@@ -164,9 +164,9 @@ test('more multiple tags', async t => {
 test('return value for non-existant text', async t => {
     try {
         await dom.waitForText({
-            text: 'non existant',
-            multipleTags: true,
-            timeout: 1000
+            text:'non existant',
+            multipleTags:true,
+            timeout:1000
         })
         t.fail("found text that doesn't exist")
     } catch (err) {
@@ -177,9 +177,9 @@ test('return value for non-existant text', async t => {
 test('partially matching text', async t => {
     try {
         await dom.waitForText({
-            text: 'quzz',
-            multipleTags: true,
-            timeout: 1000
+            text:'quzz',
+            multipleTags:true,
+            timeout:1000
         })
         t.fail("found text that doesn't exist")
     } catch (err) {
@@ -190,9 +190,9 @@ test('partially matching text', async t => {
 test('another partial match', async t => {
     try {
         await dom.waitForText({
-            text: 'quuxaa',
-            multipleTags: true,
-            timeout: 1000
+            text:'quuxaa',
+            multipleTags:true,
+            timeout:1000
         })
         t.fail('found non-existant text')
     } catch (err) {
@@ -203,9 +203,9 @@ test('another partial match', async t => {
 test('match a middle section of text', async t => {
     try {
         const el = await dom.waitForText({
-            text: 'uux',
-            multipleTags: true,
-            timeout: 1000
+            text:'uux',
+            multipleTags:true,
+            timeout:1000
         })
         t.ok(dom.isElementVisible(el!), 'should find the element')
     } catch (err) {
@@ -216,9 +216,9 @@ test('match a middle section of text', async t => {
 test('return value for multipleTags', async t => {
     try {
         const match = await dom.waitForText({
-            text: 'uux',
-            multipleTags: true,
-            timeout: 1000
+            text:'uux',
+            multipleTags:true,
+            timeout:1000
         })
 
         t.equal(match!.getAttribute('id'), 'test-el',
@@ -246,9 +246,9 @@ test('another case for text + tags', async t => {
 
     try {
         const aaa = await dom.waitForText({
-            multipleTags: true,
-            text: 'aaa',
-            timeout: 1000
+            multipleTags:true,
+            text:'aaa',
+            timeout:1000
         }, dom.byId('test-two')!)
         t.ok(dom.isElementVisible(aaa!), 'found the first string')
     } catch (err) {
@@ -257,9 +257,9 @@ test('another case for text + tags', async t => {
 
     try {
         const found = await dom.waitForText({
-            multipleTags: true,
-            text: 'bbb',
-            timeout: 1000
+            multipleTags:true,
+            text:'bbb',
+            timeout:1000
         }, dom.qs('#test-two')!)
 
         t.ok(dom.isElementVisible(found!), 'should find "bbb" string')
@@ -284,8 +284,8 @@ test('dom.event', t => {
     dom.event('hello', dom.qs('#test-two')!)
     dom.event(
         new CustomEvent('testing-event', {
-            bubbles: true,
-            detail: 'test'
+            bubbles:true,
+            detail:'test'
         }),
         dom.qs('#test-two')!
     )

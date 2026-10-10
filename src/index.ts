@@ -130,14 +130,14 @@ export function waitForText (args:Partial<{
     }
 
     if (typeof args === 'string') {
-        opts = { text: args, element: document.body }
+        opts = { text:args, element:document.body }
     } else {
-        opts = { ...args, element: parentElement }
+        opts = { ...args, element:parentElement }
     }
 
     return waitFor(
         null,
-        { timeout: opts.timeout },
+        { timeout:opts.timeout },
         () => {  // the lambda
             const {
                 element,
@@ -226,7 +226,7 @@ export function waitForText (args:Partial<{
 export function waitFor (selector?:string|null, args?:{
     visible?:boolean,
     timeout?:number
-}|null, lambda?:()=>Element|null):Promise<HTMLElement|null> {
+}|null, lambda?:() => Element|null):Promise<HTMLElement|null> {
     return new Promise((resolve, reject) => {
         const visible = args?.visible ?? true
         const timeout = args?.timeout ?? DEFAULT_TIMEOUT
@@ -278,9 +278,9 @@ export async function click (selector:HTMLElement|string):Promise<void> {
     const element = toElement(selector)
 
     event(new globalThis.MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        button: 0
+        bubbles:true,
+        cancelable:true,
+        button:0
     }), element)
 
     await requestAnimationFrame()
@@ -341,8 +341,8 @@ export async function type (
         el.value = el.value != null ? el.value + c : c
         el.dispatchEvent(
             new Event('input', {
-                bubbles: true,
-                cancelable: true
+                bubbles:true,
+                cancelable:true
             })
         )
     }

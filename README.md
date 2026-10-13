@@ -76,11 +76,22 @@ __`dom.byId`__ is equal to `document.getElementById`
 Look for a DOM element by slector. Default timeout is 5 seconds. Throws if the element is not found.
 
 ```ts
-function waitFor (selector?:string|null, args?:{
-    visible?:boolean,
-    timeout?:number
-}|null, lambda?):Promise<Element|null>
+function waitFor<K extends keyof HTMLElementTagNameMap> (
+    selector:K,
+    args?:{ visible?:boolean; timeout?:number }|null,
+    lambda?:() => Element|null
+):Promise<HTMLElementTagNameMap[K]|null>
+
+function waitFor<E extends Element = HTMLElement> (
+    selector?:string|null,
+    args?:{ visible?:boolean; timeout?:number }|null,
+    lambda?:() => Element|null
+):Promise<E|null>
 ```
+
+A tag name selector resolves to that tag's element type, including custom
+elements declared in `HTMLElementTagNameMap`. Any other selector resolves to
+`HTMLElement` by default, or to the type you pass in.
 
 #### `waitFor` example
 ```js
@@ -88,6 +99,12 @@ import { waitFor } from '@substrate-system/dom'
 
 // or pass in a query selector string
 const el = await waitFor('#my-element')
+
+// a tag name gets the matching element type (HTMLInputElement here)
+const input = await waitFor('input')
+
+// pass the element type for any other selector
+const field = await waitFor<HTMLInputElement>('#my-input')
 
 // example of using a lambda function only
 const el2 = dom.waitFor(null, null, () => {

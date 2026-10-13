@@ -210,23 +210,35 @@ export function waitForText (args:Partial<{
  * @param {{ visible:boolean, timeout:number }} [args] Configuration args
  * @param {() => Element|null} [lambda] An optional function that returns the
  *   element. Used if the `selector` is not provided.
- * @returns {Promise<Element|null>} A promise that resolves to the
- *   found element.
+ * @returns {Promise<HTMLElementTagNameMap[K]|E|null>} A promise that
+ *   resolves to the found element. A tag name selector resolves to that
+ *   tag's element type. Any other selector resolves to `E`, which defaults
+ *   to `HTMLElement`.
  *
  * @throws {Error} - Throws if neither `lambda` nor `selector` is provided.
  * @throws {Error} - Throws if the element is not found within the timeout.
  *
  * @example
  * ```js
- * waitFor({ selector: '#my-element', visible: true, timeout: 5000 })
+ * waitFor('#my-element', { visible: true, timeout: 5000 })
  *   .then(el => console.log('Element found:', el))
  *   .catch(err => console.log('Element not found:', err));
  * ```
  */
+export function waitFor<K extends keyof HTMLElementTagNameMap> (
+    selector:K,
+    args?:{ visible?:boolean; timeout?:number }|null,
+    lambda?:() => Element|null
+):Promise<HTMLElementTagNameMap[K]|null>
+export function waitFor<E extends Element = HTMLElement> (
+    selector?:string|null,
+    args?:{ visible?:boolean; timeout?:number }|null,
+    lambda?:() => Element|null
+):Promise<E|null>
 export function waitFor (selector?:string|null, args?:{
     visible?:boolean,
     timeout?:number
-}|null, lambda?:() => Element|null):Promise<HTMLElement|null> {
+}|null, lambda?:() => Element|null):Promise<Element|null> {
     return new Promise((resolve, reject) => {
         const visible = args?.visible ?? true
         const timeout = args?.timeout ?? DEFAULT_TIMEOUT
@@ -255,7 +267,7 @@ export function waitFor (selector?:string|null, args?:{
                 if (visible && !isElementVisible(el)) return
                 clearInterval(interval)
                 clearTimeout(timer)
-                return resolve(el as HTMLElement)
+                return resolve(el)
             }
         }, 50)
 
